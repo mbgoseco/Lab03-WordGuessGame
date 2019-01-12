@@ -186,6 +186,11 @@ namespace Word_Guess_Game
             }
         }
 
+        /// <summary>
+        /// Deletes a word from words.txt by overwriting the file with a new array filled with words from the old array minus the requested delete word.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="deletedWord"></param>
         public static void DeleteWords(string path, string deletedWord)
         {
             try
