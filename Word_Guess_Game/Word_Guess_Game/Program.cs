@@ -97,6 +97,14 @@ namespace Word_Guess_Game
             bool winState = false;
             Random randWord = new Random();
             string[] words = File.ReadAllLines(path);
+
+            // In case a player deletes all the words in the file then tries to start a new game.
+            if (words.Length <= 0)
+            {
+                CreateList(path);
+            }
+
+            words = File.ReadAllLines(path);
             char[] answer = words[randWord.Next(0, words.Length - 1)].ToCharArray();
             char[] boardWord = new char[answer.Length];
             for(int i = 0; i < boardWord.Length; i++)
