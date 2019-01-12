@@ -17,7 +17,7 @@ A word guessing game similar to Hangman only no one is getting hung and you have
 3. Delete Word - Lets the play enter a word to remove from the list. If the word is not on the list then no action is taken.
 4. Main Menu - Returns to the main menu.
 
-Add Word
+Add Word:
 ![add word](https://github.com/mbgoseco/Lab03-WordGuessGame/blob/master/assets/add_word.PNG)
 
 Delete Word
