@@ -1,0 +1,8 @@
+dog
+unicorn
+mountain
+cheetah
+freeway
+destroy
+horizon
+exceptions

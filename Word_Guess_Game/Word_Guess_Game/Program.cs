@@ -49,14 +49,18 @@ namespace Word_Guess_Game
                             Console.WriteLine("Thank you for playing!");
                             break;
                         default:
-                            Console.Clear();
                             throw new Exception("That selection does not exist.");
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.Clear();
                     Console.WriteLine(e.Message);
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadKey();
+                }
+                finally
+                {
+                    Console.Clear();
                 }
             }
         }
@@ -86,6 +90,82 @@ namespace Word_Guess_Game
         }
 
         public static void NewGame(string path)
+        {
+            bool winState = false;
+            Random randWord = new Random();
+            string[] words = File.ReadAllLines(path);
+            char[] answer = words[randWord.Next(0, words.Length - 1)].ToCharArray();
+            char[] boardWord = new char[answer.Length];
+            for(int i = 0; i < boardWord.Length; i++)
+            {
+                boardWord[i] = '_';
+            }
+            string wrongLetters = "";
+
+            while (!winState)
+            {
+                try
+                {
+                    SetBoard(answer, boardWord, wrongLetters);
+
+                    Console.Write("Guess a letter: ");
+                    string guess = Console.ReadLine();
+                    if (guess.Length == 0)
+                    {
+                        throw new Exception("No guess was entered.");
+                    }
+                    else if (guess.Length > 1)
+                    {
+                        throw new Exception("Only enter a single letter for a guess.");
+                    }
+                    else
+                    {
+                        GuessLetter(answer, boardWord, wrongLetters, guess);
+                    }
+
+                    winState = CheckWinCondition(answer, boardWord);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadKey();
+                }
+                finally
+                {
+                    Console.Clear();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets up the user interface for the game and updates it after every guess.
+        /// </summary>
+        /// <param name="answer"></param>
+        /// <param name="boardWord"></param>
+        /// <param name="wrongLetters"></param>
+        public static void SetBoard(char[] answer, char[]boardWord, string wrongLetters)
+        {
+            Console.Clear();
+            char[] wrongChars = wrongLetters.ToCharArray();
+            Console.WriteLine("--------GUESS THE WORD--------\n");
+            for(int i = 0; i < answer.Length; i++)
+            {
+                Console.Write($" {boardWord[i]} ");
+            }
+            Console.WriteLine();
+            Console.WriteLine("<><><><><><><><><><><><><><><>");
+            Console.Write("Wrong letters: ");
+            Console.WriteLine(string.Join(" ", wrongChars));
+            Console.WriteLine("<><><><><><><><><><><><><><><>");
+        }
+
+        public static void GuessLetter(char[] answer, char[] boardWord, string wrongLetters, string guess)
+        {
+
+        }
+
+        public static bool CheckWinCondition(char[] answer, char[] boardWord)
         {
 
         }
@@ -137,8 +217,13 @@ namespace Word_Guess_Game
                 }
                 catch (Exception e)
                 {
-                    Console.Clear();
                     Console.WriteLine(e.Message);
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadKey();
+                }
+                finally
+                {
+                    Console.Clear();
                 }
             }
         }
@@ -181,8 +266,13 @@ namespace Word_Guess_Game
             }
             catch(Exception e)
             {
-                Console.Clear();
                 Console.WriteLine(e.Message);
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+            }
+            finally
+            {
+                Console.Clear();
             }
         }
 
