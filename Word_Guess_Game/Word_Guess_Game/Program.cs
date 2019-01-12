@@ -68,7 +68,7 @@ namespace Word_Guess_Game
         public static void CreateList(string path)
         {
             
-            string[] words = { "dog", "unicorn", "mountain", "cheetah", "freeway", "destroy" };
+            string[] words = { "dog", "unicorn", "mountain", "cheetah", "freeway", "destroy", "horizon", "exceptions" };
             try
             {
                 using (StreamWriter streamWriter = new StreamWriter(path))
@@ -103,8 +103,8 @@ namespace Word_Guess_Game
                 Console.WriteLine("---------------OPTIONS--------------");
                 Console.WriteLine("<><><><><><><><><><><><><><><><><><>");
                 Console.WriteLine("1) View Words");
-                Console.WriteLine("2) Add Words");
-                Console.WriteLine("3) Delete Words");
+                Console.WriteLine("2) Add Word");
+                Console.WriteLine("3) Delete Word");
                 Console.WriteLine("4) Main Menu");
                 Console.WriteLine("<><><><><><><><><><><><><><><><><><>");
                 Console.Write("Choose a selection: ");
@@ -115,14 +115,17 @@ namespace Word_Guess_Game
                     switch (selection)
                     {
                         case "1":
-                            Console.Clear();
                             ShowWords(path);
                             break;
                         case "2":
-                            AddWords(path);
+                            Console.Write("Enter a word to add to the list: ");
+                            string newWord = Console.ReadLine();
+                            AddWords(path, newWord);
                             break;
                         case "3":
-                            DeleteWords(path);
+                            Console.Write("Enter a word to delete: ");
+                            string deletedWord = Console.ReadLine();
+                            DeleteWords(path, deletedWord);
                             break;
                         case "4":
                             Console.Clear();
@@ -140,14 +143,28 @@ namespace Word_Guess_Game
             }
         }
 
-        public static void AddWords(string path)
+        /// <summary>
+        /// Checks if the word to add already exists on the list and, if not, appends it.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="newWord"></param>
+        public static void AddWords(string path, string newWord)
         {
             try
             {
+                string[] words = File.ReadAllLines(path);
+                foreach (string word in words)
+                {
+                    if (string.Equals(word, newWord, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"{newWord} already exists on the list.");
+                        return;
+                    }
+                }
                 using (StreamWriter streamWriter = File.AppendText(path))
                 {
-                    Console.Write("Enter a word to add to the list: ");
-                    string newWord = Console.ReadLine();
+                 
                     if(newWord.Length > 0)
                     {
                         streamWriter.WriteLine(newWord);
@@ -169,9 +186,64 @@ namespace Word_Guess_Game
             }
         }
 
-        public static void DeleteWords(string path)
+        public static void DeleteWords(string path, string deletedWord)
         {
+            try
+            {
+                if (deletedWord.Length > 0)
+                {
+                    string[] words = File.ReadAllLines(path);
+                    foreach (string word in words)
+                    {
+                        if (string.Equals(word, deletedWord, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            string[] newList = new string[words.Length - 1];
+                            int counter = 0;
+                            for (int i = 0; i < newList.Length; i++)
+                            {
+                                if (deletedWord == words[counter])
+                                {
+                                    i--;
+                                    counter++;
+                                }
+                                else
+                                {
+                                    newList[i] = words[counter];
+                                    counter++;
+                                }
+                            }
 
+                            using (StreamWriter streamWriter = new StreamWriter(path))
+                            {
+                                for (int i = 0; i < newList.Length; i++)
+                                {
+                                    streamWriter.WriteLine(newList[i]);
+                                }
+                            }
+
+
+                            Console.Clear();
+                            Console.WriteLine($"{deletedWord} was removed from the list.");
+                            return;
+                        }
+                        
+                    }
+                    Console.Clear();
+                    Console.Write($"{deletedWord} does not exist on the list");
+                    
+                }
+                else
+                {
+                    Console.Clear();
+                    throw new Exception("No word was entered.");
+                }
+                    
+            }
+            catch (Exception e)
+            {
+                Console.Clear();
+                Console.WriteLine(e.Message);
+            }
         }
 
         /// <summary>
@@ -180,6 +252,7 @@ namespace Word_Guess_Game
         /// <param name="path"></param>
         public static void ShowWords(string path)
         {
+            Console.Clear();
             Console.WriteLine("-----Word List-----");
             string[] words = File.ReadAllLines(path);
             foreach(string word in words)
