@@ -45,8 +45,6 @@ namespace Word_Guess_Game
                             Options(path);
                             break;
                         case "3":
-                            Console.Clear();
-                            Console.WriteLine("Thank you for playing!");
                             break;
                         default:
                             throw new Exception("That selection does not exist.");
@@ -63,6 +61,7 @@ namespace Word_Guess_Game
                     Console.Clear();
                 }
             }
+            Console.WriteLine("Thank you for playing!");
         }
 
         /// <summary>
@@ -89,6 +88,10 @@ namespace Word_Guess_Game
             }
         }
 
+        /// <summary>
+        /// Initializes a new game by running a looping sequence of methods that create the game board, prompt the user to guess a letter, check if the letter exists in the answer word, then update the board with the results. If the word has been revealed completely then the loop is escaped and the user wins!
+        /// </summary>
+        /// <param name="path"></param>
         public static void NewGame(string path)
         {
             bool winState = false;
@@ -120,7 +123,7 @@ namespace Word_Guess_Game
                     }
                     else
                     {
-                        GuessLetter(answer, boardWord, wrongLetters, guess);
+                        GuessLetter(answer, boardWord, ref wrongLetters, guess);
                     }
 
                     winState = CheckWinCondition(answer, boardWord);
@@ -131,11 +134,12 @@ namespace Word_Guess_Game
                     Console.WriteLine("Press any key to continue...");
                     Console.ReadKey();
                 }
-                finally
-                {
-                    Console.Clear();
-                }
             }
+            SetBoard(answer, boardWord, wrongLetters);
+            Console.WriteLine("<><><><><> YOU WIN! <><><><><>");
+            Console.WriteLine("<><><><><><><><><><><><><><><>");
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -160,14 +164,46 @@ namespace Word_Guess_Game
             Console.WriteLine("<><><><><><><><><><><><><><><>");
         }
 
-        public static void GuessLetter(char[] answer, char[] boardWord, string wrongLetters, string guess)
+        /// <summary>
+        /// Checks if the guessed letter exists in the answer word. If it does then it loops through the spaces on the game board and replaces blanks with the correct letter. If not then it adds the guessed letter to the string of wrong letters.
+        /// </summary>
+        /// <param name="answer"></param>
+        /// <param name="boardWord"></param>
+        /// <param name="wrongLetters"></param>
+        /// <param name="guess"></param>
+        public static void GuessLetter(char[] answer, char[] boardWord, ref string wrongLetters, string guess)
         {
-
+            if (String.Join("", answer).Contains(guess, StringComparison.CurrentCultureIgnoreCase))
+            {
+                for(int i = 0; i < answer.Length; i++)
+                {
+                    if(answer[i].ToString().Contains(guess, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        boardWord[i] = Convert.ToChar(guess.ToUpper());
+                    }
+                }
+            }
+            else
+            {
+                wrongLetters += guess.ToUpper();
+            }
         }
 
+        /// <summary>
+        /// Checks if the player has guessed the word entirely by comparing the answer string to the string represented on the game board.
+        /// </summary>
+        /// <param name="answer"></param>
+        /// <param name="boardWord"></param>
+        /// <returns></returns>
         public static bool CheckWinCondition(char[] answer, char[] boardWord)
         {
-
+            string strAnswer = String.Join("", answer);
+            string strBoardWord = String.Join("", boardWord);
+            if (strAnswer.ToLower() == strBoardWord.ToLower())
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -196,22 +232,24 @@ namespace Word_Guess_Game
                     {
                         case "1":
                             ShowWords(path);
+                            Console.WriteLine("Press any key to continue...");
+                            Console.ReadKey();
                             break;
                         case "2":
                             Console.Write("Enter a word to add to the list: ");
                             string newWord = Console.ReadLine();
                             AddWords(path, newWord);
+                            Console.ReadKey();
                             break;
                         case "3":
                             Console.Write("Enter a word to delete: ");
                             string deletedWord = Console.ReadLine();
                             DeleteWords(path, deletedWord);
+                            Console.ReadKey();
                             break;
                         case "4":
-                            Console.Clear();
                             break;
                         default:
-                            Console.Clear();
                             throw new Exception("That selection does not exist.");
                     }
                 }
@@ -242,7 +280,6 @@ namespace Word_Guess_Game
                 {
                     if (string.Equals(word, newWord, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        Console.Clear();
                         Console.WriteLine($"{newWord} already exists on the list.");
                         return;
                     }
@@ -253,12 +290,10 @@ namespace Word_Guess_Game
                     if(newWord.Length > 0)
                     {
                         streamWriter.WriteLine(newWord);
-                        Console.Clear();
                         Console.WriteLine($"{newWord} was added to the list.");
                     }
                     else
                     {
-                        Console.Clear();
                         throw new Exception("No word was entered.");
                     }
 
@@ -267,12 +302,10 @@ namespace Word_Guess_Game
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
             }
             finally
             {
-                Console.Clear();
+                Console.WriteLine("Press any key to continue...");
             }
         }
 
@@ -315,29 +348,27 @@ namespace Word_Guess_Game
                                     streamWriter.WriteLine(newList[i]);
                                 }
                             }
-
-
-                            Console.Clear();
                             Console.WriteLine($"{deletedWord} was removed from the list.");
                             return;
                         }
                         
                     }
-                    Console.Clear();
-                    Console.Write($"{deletedWord} does not exist on the list");
+                    Console.WriteLine($"{deletedWord} does not exist on the list");
                     
                 }
                 else
                 {
-                    Console.Clear();
                     throw new Exception("No word was entered.");
                 }
                     
             }
             catch (Exception e)
             {
-                Console.Clear();
                 Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                Console.WriteLine("Press any key to continue...");
             }
         }
 
