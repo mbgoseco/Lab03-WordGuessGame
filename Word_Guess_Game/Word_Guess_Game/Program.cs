@@ -9,17 +9,18 @@ namespace Word_Guess_Game
         {
             string path = "../../../words.txt";
             string selection = "";
+            string[] defaultWords = { "dog", "unicorn", "mountain", "cheetah", "freeway", "destroy", "horizon", "exceptions" };
 
             // Checks if file exists or if file is empty and if so creates default word list.
             if (!File.Exists(path))
             {
-                CreateList(path);
+                CreateList(path, defaultWords);
             } else
             {
                 string[] readLines = File.ReadAllLines(path);
                 if (readLines.Length <= 0)
                 {
-                    CreateList(path);
+                    CreateList(path, defaultWords);
                 }
             }
 
@@ -68,10 +69,8 @@ namespace Word_Guess_Game
         /// This method will populate it with default words in the event that the file is empty.
         /// </summary>
         /// <param name="path"></param>
-        public static void CreateList(string path)
+        public static void CreateList(string path, string[] words)
         {
-            
-            string[] words = { "dog", "unicorn", "mountain", "cheetah", "freeway", "destroy", "horizon", "exceptions" };
             try
             {
                 using (StreamWriter streamWriter = new StreamWriter(path))
@@ -101,7 +100,8 @@ namespace Word_Guess_Game
             // In case a player deletes all the words in the file then tries to start a new game.
             if (words.Length <= 0)
             {
-                CreateList(path);
+                string[] defaultWords = { "dog", "unicorn", "mountain", "cheetah", "freeway", "destroy", "horizon", "exceptions" };
+                CreateList(path, defaultWords);
             }
 
             words = File.ReadAllLines(path);
@@ -239,7 +239,13 @@ namespace Word_Guess_Game
                     switch (selection)
                     {
                         case "1":
-                            ShowWords(path);
+                            string[] words = ShowWords(path);
+                            Console.Clear();
+                            Console.WriteLine("-----Word List-----");
+                            foreach (string word in words)
+                            {
+                                Console.WriteLine(word);
+                            }
                             Console.WriteLine("Press any key to continue...");
                             Console.ReadKey();
                             break;
@@ -384,15 +390,10 @@ namespace Word_Guess_Game
         /// This method displays the words in the words.txt file
         /// </summary>
         /// <param name="path"></param>
-        public static void ShowWords(string path)
+        public static string[] ShowWords(string path)
         {
-            Console.Clear();
-            Console.WriteLine("-----Word List-----");
             string[] words = File.ReadAllLines(path);
-            foreach(string word in words)
-            {
-                Console.WriteLine(word);
-            }
+            return words;
         }
 
     }

@@ -12,12 +12,10 @@ namespace XUnitTestWordGuessGame
         public void CreateWordFile()
         {
             string path = "../../../TestWords.txt";
-            using (StreamWriter streamWriter = new StreamWriter(path))
-            {
-                streamWriter.WriteLine("one");
-                streamWriter.WriteLine("two");
-                streamWriter.WriteLine("three");
-            }
+            string[] newWords = {"one", "two", "three"};
+
+            Program.CreateList(path, newWords);
+
             string[] words = File.ReadAllLines(path);
             Assert.Contains(words[0], "one");
             Assert.Contains(words[1], "two");
@@ -26,7 +24,7 @@ namespace XUnitTestWordGuessGame
 
         // Tests that a word can be added to the file
         [Fact]
-        public void AddWords()
+        public void WordsAdded()
         {
             string path = "../../../TestWords.txt";
             using (StreamWriter streamWriter = new StreamWriter(path))
@@ -36,15 +34,31 @@ namespace XUnitTestWordGuessGame
                 streamWriter.WriteLine("three");
             }
 
-            using (StreamWriter streamWriter = File.AppendText(path))
-            {
-                streamWriter.WriteLine("four");
-                streamWriter.WriteLine("five");
-            }
+            
+            Program.AddWords(path, "four");
+            Program.AddWords(path, "five");
 
             string[] words = File.ReadAllLines(path);
             Assert.Contains(words[3], "four");
             Assert.Contains(words[4], "five");
+        }
+
+        // Test that a word can be removed from a file
+        [Fact]
+        public void WordIsRemoved()
+        {
+            string path = "../../../TestWords.txt";
+            using (StreamWriter streamWriter = new StreamWriter(path))
+            {
+                streamWriter.WriteLine("eh");
+                streamWriter.WriteLine("bee");
+                streamWriter.WriteLine("sea");
+            }
+
+            Program.DeleteWords(path, "bee");
+
+            string[] words = File.ReadAllLines(path);
+            Assert.Contains(words[1], "sea");
         }
 
         // Test that all words can be retrieved from a file
@@ -60,7 +74,7 @@ namespace XUnitTestWordGuessGame
                 streamWriter.WriteLine("turtle");
                 streamWriter.WriteLine("lizard");
             }
-            string[] words = File.ReadAllLines(path);
+            string[] words = Program.ShowWords(path);
             string allWords = String.Join(", ", words);
             Assert.Equal("cat, dog, rabbit, turtle, lizard", allWords);
         }
